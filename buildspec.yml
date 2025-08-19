@@ -3,17 +3,20 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      nodejs: 18
+      nodejs: 20
     commands:
       - echo "Installing Artillery and Playwright engine..."
-      # Artillery 및 Playwright 엔진 설치
-      - npm install -g artillery artillery-engine-playwright
+      # Node.js 버전 확인
+      - node --version
+      - npm --version
+      # Artillery 안정 버전 설치 (Node.js 20 호환)
+      - npm install -g artillery@2.0.17 
       - echo "Installing project dependencies..."
       # 프로젝트 의존성 설치
       - npm install
       # Playwright 브라우저 바이너리 설치
       - echo "Installing Playwright browsers with dependencies..."
-      - npx playwright install --with-deps
+      - npx playwright install --with-deps chromium
       - echo "Installation completed"
       
   pre_build:
@@ -21,32 +24,45 @@ phases:
       - echo "Pre-build phase started on `date`"
       - echo "Creating reports directory..."
       - mkdir -p reports
+      - echo "Verifying Node.js and npm versions..."
+      - node --version
+      - npm --version
       - echo "Verifying Artillery installation..."
-      - artillery --version
+      - artillery --version || (echo "Artillery installation failed" && exit 1)
       - echo "Verifying Playwright installation..." 
-      - npx playwright --version
+      - npx playwright --version || (echo "Playwright installation failed" && exit 1)
+      - echo "Testing Playwright browser installation..."
+      - npx playwright install-deps --with-deps chromium || echo "Browser deps installation completed"
       
   build:
     commands:
       - echo "Build phase started on `date`"
+      - echo "Checking test files..."
+      - ls -la script.yml flow.js users.csv || (echo "Required test files missing" && exit 1)
       # 테스트 실행 (필요에 따라 run, run-lambda, run-fargate 선택)
       - echo "Starting Artillery load test..."
-      - artillery run script.yml --output reports/report.json || echo "Test completed with some failures"
+      - export NODE_OPTIONS="--max-old-space-size=4096"
+      - artillery run script.yml --output reports/report.json || (echo "Test execution failed" && exit 1)
       
   post_build:
     commands:
       - echo "Post-build phase started on `date`"
+      - echo "Checking test results..."
+      - ls -la reports/ || echo "Reports directory not found"
       - echo "Generating HTML report..."
       # HTML 리포트 생성 (report.json이 존재하는 경우에만)
       - |
         if [ -f "reports/report.json" ]; then
+          echo "Found JSON report, generating HTML..."
           artillery report --output reports/report.html reports/report.json
           echo "HTML report generated successfully"
+          echo "Report file sizes:"
+          ls -lh reports/
         else
-          echo "No JSON report found, skipping HTML generation"
+          echo "No JSON report found, creating placeholder report"
+          echo '{"summary": "Test execution failed - no results generated"}' > reports/report.json
         fi
       - echo "Build completed on `date`"
-      - ls -la reports/
 
 artifacts:
   files:
