@@ -1,0 +1,32 @@
+{
+  "name": "ns-artillery-loadtest",
+  "version": "1.0.0",
+  "description": "Artillery & Playwright E2E Load Testing Automation for N.Small",
+  "main": "flow.js",
+  "scripts": {
+    "test": "artillery run script.yml",
+    "test:lambda": "artillery run-lambda script.yml",
+    "test:fargate": "artillery run-fargate script.yml",
+    "test:output": "artillery run script.yml --output report.json",
+    "report": "artillery report --output report.html report.json",
+    "install:browsers": "npx playwright install --with-deps",
+    "dev": "artillery run script.yml --output report.json && npm run report"
+  },
+  "keywords": [
+    "artillery",
+    "playwright",
+    "load-testing",
+    "e2e",
+    "performance"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "artillery": "^2.0.20",
+    "artillery-engine-playwright": "^1.0.0",
+    "playwright": "^1.45.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
+  }
+}

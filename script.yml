@@ -1,0 +1,45 @@
+config:
+  target: 'https://nsm-stg-mfo.nsmall.com'
+  processor: './flow.js'
+  
+  payload:
+    path: './users.csv'
+    fields:
+      - 'email'
+      - 'password'
+    skipHeader: true
+    order: 'sequence'
+  
+  engines:
+    playwright:
+      launchOptions:
+        headless: true
+        args:
+          - '--no-sandbox'
+          - '--disable-setuid-sandbox'
+          - '--disable-dev-shm-usage'
+      contextOptions:
+        ignoreHTTPSErrors: true
+        viewport:
+          width: 1920
+          height: 1080
+      defaultNavigationTimeout: 30000
+      extendedMetrics: true
+  
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm up the system"
+    - duration: 120
+      arrivalRate: 1
+      rampTo: 5
+      name: "Ramp up to 5 users per second"  
+    - duration: 300
+      arrivalRate: 5
+      name: "Sustain 5 users per second"
+
+scenarios:
+  - name: "User Journey - Home to Login Flow"
+    engine: playwright
+    flowFunction: userJourney
+    weight: 1

@@ -1,0 +1,63 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+    commands:
+      - echo "Installing Artillery and Playwright engine..."
+      # Artillery 및 Playwright 엔진 설치
+      - npm install -g artillery artillery-engine-playwright
+      - echo "Installing project dependencies..."
+      # 프로젝트 의존성 설치
+      - npm install
+      # Playwright 브라우저 바이너리 설치
+      - echo "Installing Playwright browsers with dependencies..."
+      - npx playwright install --with-deps
+      - echo "Installation completed"
+      
+  pre_build:
+    commands:
+      - echo "Pre-build phase started on `date`"
+      - echo "Creating reports directory..."
+      - mkdir -p reports
+      - echo "Verifying Artillery installation..."
+      - artillery --version
+      - echo "Verifying Playwright installation..." 
+      - npx playwright --version
+      
+  build:
+    commands:
+      - echo "Build phase started on `date`"
+      # 테스트 실행 (필요에 따라 run, run-lambda, run-fargate 선택)
+      - echo "Starting Artillery load test..."
+      - artillery run script.yml --output reports/report.json || echo "Test completed with some failures"
+      
+  post_build:
+    commands:
+      - echo "Post-build phase started on `date`"
+      - echo "Generating HTML report..."
+      # HTML 리포트 생성 (report.json이 존재하는 경우에만)
+      - |
+        if [ -f "reports/report.json" ]; then
+          artillery report --output reports/report.html reports/report.json
+          echo "HTML report generated successfully"
+        else
+          echo "No JSON report found, skipping HTML generation"
+        fi
+      - echo "Build completed on `date`"
+      - ls -la reports/
+
+artifacts:
+  files:
+    # 테스트 결과 리포트 아티팩트 저장
+    - "reports/report.json"
+    - "reports/report.html"
+    - "reports/*"
+  name: artillery-test-results-$CODEBUILD_BUILD_NUMBER
+  
+reports:
+  artillery-test:
+    files:
+      - "reports/report.json"
+    file-format: 'JSON'
