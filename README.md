@@ -1,6 +1,6 @@
-# N.Small Artillery & Playwright E2E Load Testing
+# N.Small Artillery & Playwright Load Testing
 
-Artillery와 Playwright를 사용한 N.Small 서비스의 End-to-End 부하 테스트 자동화 프로젝트입니다.
+Artillery와 Playwright를 사용한 N.Small 서비스의 부하 테스트 자동화 프로젝트입니다.
 
 ## 📋 프로젝트 개요
 

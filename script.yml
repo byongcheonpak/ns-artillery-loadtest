@@ -1,5 +1,5 @@
 config:
-  target: 'https://nsm-stg-mfo.nsmall.com'
+  target: 'https://m.nsmall.com'
   processor: './flow.js'
   
   payload:
