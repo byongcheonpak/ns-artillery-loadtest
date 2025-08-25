@@ -1,4 +1,4 @@
-Artillery & Playwright 기반 E2E 부하 테스트 자동화 요구사항
+Artillery & Playwright 기반 부하 테스트 자동화 요구사항
 1. 프로젝트 개요
 목표: 사용자의 실제 서비스 이용 흐름을 시뮬레이션하는 End-to-End (E2E) 시나리오 기반의 부하 테스트 환경을 구축하고, CI/CD 파이프라인에 통합하여 자동화합니다.
 
