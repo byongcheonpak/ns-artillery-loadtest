@@ -38,7 +38,6 @@ Sheets로 내보내기
 코드 스니펫
 
 email,password
-skychon80,pbc63511
 
 3. Artillery 테스트 구성 (script.yml)
 Artillery 테스트의 전반적인 설정을 정의하는 script.yml 파일을 작성합니다.
