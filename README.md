@@ -92,11 +92,7 @@ phases:
 
 ### 계정 정보
 테스트용 로그인 계정은 `users.csv` 파일에서 관리됩니다:
-```csv
-email,password
-num11@naver.com,1q2w3e4r
-stg-test2@nsmall.com,nsmall!@
-```
+
 
 ## 📈 결과 분석
 
